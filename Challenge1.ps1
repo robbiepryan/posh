@@ -47,18 +47,18 @@ while ($counter -le $linecount) {
     $content1=(Get-Content $file1)[$lineNumber] ## GETS THE FILE1 CONTENTS OF A PARTICULAR LINE
     $content2=(Get-Content $file2)[$lineNumber] ## GETS THE FILE2 CONTENTS OF THE SAME LINE
 
-    ## COMPARES THE PARTICULAR LINE OF FILE1 TO THE SAME LINE OF FILE2;
-    ## IF THE LINES DON'T MATCH, APPEND <File Name>:<Line Number>: <Line Content> ; <File Name>:<Line Number>: <Line Content> TO OUTPUT FILE AND WRITE TO CONSOLE
+## COMPARES THE PARTICULAR LINE OF FILE1 TO THE SAME LINE OF FILE2;
+## IF THE LINES DON'T MATCH, APPEND <File Name>:<Line Number>: <Line Content> ; <File Name>:<Line Number>: <Line Content> TO OUTPUT FILE AND WRITE TO CONSOLE
     if($content1 -cne $content2)
             {Write-Host $filename1":"$lineNumber": "$content1";" $filename2":"$lineNumber": "$content2; 
              Write-Output ($filename1 + ":" + $lineNumber + ": " + $content1 + "; " + $filename2 + ":" + $lineNumber + ": " + $content2) | Out-File $output -Append;
              $diffCount++} ## INCREMENT THE DIFFERENCE COUNT BY 1
 
-        ## IF THE LINES DO MATCH, APPEND <Line Content> TO OUTPUT FILE AND WRITE TO CONSOLE
+## IF THE LINES DO MATCH, APPEND <Line Content> TO OUTPUT FILE AND WRITE TO CONSOLE
         Else {Write-Host $content1;
               Write-Output $content1 | Out-File $output -Append}
 
-    ## INCREMENT BOTH THE LINE NUMBER AND COUNTER BY 1
+## INCREMENT BOTH THE LINE NUMBER AND COUNTER BY 1
     $lineNumber++
     $counter++
 }
