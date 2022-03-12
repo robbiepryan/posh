@@ -7,11 +7,13 @@ $result = ''
 $correctUser = ''
 $upn = ''
 
+
 # # # # # # #
 # Get Input #
 # # # # # # #
 
 $user = Read-Host -Prompt "Enter username`n"
+
 
 # # # # # # #
 # Find User #
@@ -21,6 +23,7 @@ $result = (Get-aduser -Filter * |
 Where-Object {($_.SamAccountName -like "*$user*") -or ($_.Name -like "*$user*")}
 )
 
+
 # # # # # # # #
 # Verify User #
 # # # # # # # #
@@ -28,6 +31,7 @@ Where-Object {($_.SamAccountName -like "*$user*") -or ($_.Name -like "*$user*")}
 Write-Host "`n$($result.Name) is the selected user."
 
 $correctUser = Read-Host -Prompt "`nIs this correct? (Y/N)`n"
+
 
 # # # # # #
 # Action! #
