@@ -20,7 +20,8 @@ $user = Read-Host -Prompt "Enter username`n"
 # # # # # # #
 
 $result = (Get-aduser -Filter * |
-Where-Object {($_.SamAccountName -like "*$user*") -or ($_.Name -like "*$user*")}
+Where-Object {($_.SamAccountName -like "*$user*") -or ($_.Name -like "*$user*")} |
+Select-Object -First 1
 )
 
 
