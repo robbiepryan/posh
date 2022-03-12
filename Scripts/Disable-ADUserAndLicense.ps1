@@ -52,6 +52,8 @@ switch ($correctUser) {
             ForEach-Object{
                 Set-MsolUserLicense -UserPrincipalName $upn -RemoveLicenses $_
             }
+
+        Write-Host "Complete!"
     } 
 
     Default {
