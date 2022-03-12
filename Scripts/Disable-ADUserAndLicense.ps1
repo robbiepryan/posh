@@ -54,10 +54,10 @@ switch ($correctUser) {
         Write-Host "Removing Licenses..."
         
         (get-MsolUser -UserPrincipalName $upn).licenses.AccountSkuId |
-            ForEach-Object{
-                Set-MsolUserLicense -UserPrincipalName $upn -RemoveLicenses $_
-            }
-
+        ForEach-Object{
+            Set-MsolUserLicense -UserPrincipalName $upn -RemoveLicenses $_
+        }
+        
         Write-Host "Complete!"
     } 
 
