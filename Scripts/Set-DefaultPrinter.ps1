@@ -1,4 +1,4 @@
-# Set config file location
+# Set $ConfigFile location
 $ConfigFile = "~\DefaultPrinter.config"
 
 <#
@@ -17,5 +17,5 @@ if ((Test-Path $ConfigFile) -eq $false) {
         Out-File $ConfigFile
 } 
 
-# Set default printer to the printer name listed in $ConfigFile
+# Set default printer to the printer name listed in the $ConfigFile
 (New-Object -ComObject WScript.Network).SetDefaultPrinter((Get-Content $ConfigFile))
