@@ -6,7 +6,7 @@ $ConfigFile = "~\DefaultPrinter.config"
  # to the printer specified in the $ConfigFile. If $ConfigFile doesn't exist, ask
  # user to enter the name of the printer to set as default and save that value as
  # $UserInput. Then, do a wildcard search for installed printers that match
- # $UserInput, and set that value equal to $ConfigFile
+ # $UserInput, and write that value to $ConfigFile
  #> 
 
 if ((Test-Path $ConfigFile) -eq $false) {
