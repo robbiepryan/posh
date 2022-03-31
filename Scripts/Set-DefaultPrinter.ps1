@@ -5,14 +5,15 @@ $ConfigFile = "~\DefaultPrinter.config"
  # Test if $ConfigFile exists. If $ConfigFile already exits, set default printer
  # to the printer specified in the $ConfigFile. If $ConfigFile doesn't exist, ask
  # user to enter the name of the printer to set as default and save that value as
- # $UserInput. Then, do a wildcard search for installed printers that match
- # $UserInput, and write that value to $ConfigFile
+ # $UserInput. Then, do a wildcard search for the first installed printer that
+ # matches $UserInput, and write that value to $ConfigFile
  #> 
 
 if ((Test-Path $ConfigFile) -eq $false) {
     $UserInput = Read-Host -Prompt "Enter name of printer to set as default"
     (Get-Printer |
-        Where-Object Name -like "*$UserInput*").Name |
+        Where-Object Name -like "*$UserInput*" |
+        Select-Object -First 1).Name |
         Out-File $ConfigFile
 } 
 
