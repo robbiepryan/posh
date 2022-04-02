@@ -1,3 +1,4 @@
+
 $ErrorActionPreference = "SilentlyContinue"
 
 $printer = (Read-Host -Prompt "Enter Printer Name")
