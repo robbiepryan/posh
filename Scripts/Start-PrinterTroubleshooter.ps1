@@ -51,7 +51,7 @@ function TestCommonPorts {
     $nmapPath = 'C:\Program Files (x86)\Nmap\nmap.exe'
     if ((Test-Path $nmapPath) -eq $true) {
         Set-Location "C:\Program Files (x86)\Nmap\"
-        nmap.exe -p 9100,515,631 $IP
+        .\nmap.exe -p 9100,515,631 $IP
     } else {
     Test-NetConnection $IP -Port 9100 | Out-Null
     Test-NetConnection $IP -Port 515 | Out-Null
