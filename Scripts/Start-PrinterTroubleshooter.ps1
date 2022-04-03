@@ -50,8 +50,7 @@ function TestCommonPorts {
     Test-NetConnection $IP -Port 9100 | Out-Null
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
-
-    Write-Host "If printer shows online but ports are closed, the printer IP is likely incorrect."
+    Write-Host "`nIf printer shows online but port tests fail, the printer IP is likely incorrect."
 }
 
 function GetPrinterInformation {
