@@ -46,6 +46,14 @@ function ResumePrinting {
     (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").resume() | Out-Null
 }
 
+function TestCommonPorts {
+    Test-NetConnection $IP -Port 9100 | Out-Null
+    Test-NetConnection $IP -Port 515 | Out-Null
+    Test-NetConnection $IP -Port 631 | Out-Null
+
+    Write-Host "If printer shows online but ports are closed, the printer IP is likely incorrect."
+}
+
 function GetPrinterInformation {
     $userInput = ( Read-Host -Prompt "`nEnter printer name, or 'back' to go back" )
     Clear-Host
@@ -96,9 +104,9 @@ function GetPrinterInformation {
         $IP = ( Get-PrinterPort -Name ($printer).Portname |
             Select-Object -ExpandProperty PrinterHostAddress )
             
-        Test-Connection $IP -Count 1 | Out-Null
+        $pingTest = (Test-Connection $IP -Count 1).Status
     
-        if ( $? -eq $true ){ 
+        if ( $pingTest -eq "Success" ){ 
             $pingResult = "Online"
             $hostname = ([System.Net.Dns]::GetHostByName($env:computerName)).HostName
         }
@@ -130,16 +138,17 @@ GetPrintJobs
         if ( $pingResult -eq "Online" ){ 
             Write-Host "`nPowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
             Write-Host "`n
-1  > Find User Print Jobs             
-2  > Print Test Page 
-3  > Delete Test Pages         
-4  > Delete Jobs w/ Errors
-5  > Pause Printing
-6  > Resume Printing
-7  > Query SNMP for Model/Status
-8  > Show PowerShell Command to Print Test Page 
-9  > Restart Script
-10 > Exit           
+1  > Test Common Ports
+2  > Find User Print Jobs             
+3  > Print Test Page 
+4  > Delete Test Pages         
+5  > Delete Jobs w/ Errors
+6  > Pause Printing
+7  > Resume Printing
+8  > Query SNMP for Model/Status
+9  > Show PowerShell Command to Print Test Page 
+10 > Restart Script
+11 > Exit           
 
         " -ForegroundColor DarkGray
     
@@ -148,13 +157,14 @@ GetPrintJobs
         Clear-Host
     
         switch ($userInput2) {
-            1 { FindUserPrintJobs }
-            2 { SendTestPage }
-            3 { RemoveTestPages }
-            4 { RemoveJobsWithErrors }
-            5 { PausePrinting }
-            6 { ResumePrinting }
-            7 { Write-Host "`nQuerying SNMP for printer model and status. This could take a little while ..."
+            1 { TestCommonPorts }
+            2 { FindUserPrintJobs }
+            3 { SendTestPage }
+            4 { RemoveTestPages }
+            5 { RemoveJobsWithErrors }
+            6 { PausePrinting }
+            7 { ResumePrinting }
+            8 { Write-Host "`nQuerying SNMP for printer model and status. This could take a little while ..."
                 $SNMP = New-Object -ComObject olePrn.OleSNMP
                 $SNMP.Open( $IP, "public" )
                 $model = $SNMP.Get( ".1.3.6.1.2.1.25.3.2.1.3.1" )
@@ -163,13 +173,13 @@ GetPrintJobs
                     Write-Host "Completed SNMP query.`n"
                     Write-Host "    Printer Model   : $model"
                     Write-Host "    Display Readout : $display" }
-            8 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
+            9 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
                 Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
                     Invoke-CimMethod -MethodName PrintTestPage"
                 Read-Host -Prompt "`nPress Enter to continue ..."
                 Clear-Host}
-            9 {  }
-            10 { exit }
+            10 {  }
+            11 { exit }
             '' {  }
     
             Default { $printer = ( Get-Printer |
@@ -177,7 +187,7 @@ GetPrintJobs
                 Select-Object Name,PortName,DriverName |
                 Select-Object -First 1 ) }
         }
-    } until ( $userInput2 -eq 9 )
+    } until ( $userInput2 -eq 10 )
 
 Clear-Host
 }
