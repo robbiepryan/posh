@@ -130,15 +130,16 @@ GetPrintJobs
         if ( $pingResult -eq "Online" ){ 
             Write-Host "`nPowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
             Write-Host "`n
-1 > Find User Print Jobs             
-2 > Print Test Page 
-3 > Delete Test Pages         
-4 > Delete Jobs w/ Errors
-5 > Pause Printing
-6 > Resume Printing
-7 > Query SNMP for Model/Status   
-8 > Restart Script
-9 > Exit           
+1  > Find User Print Jobs             
+2  > Print Test Page 
+3  > Delete Test Pages         
+4  > Delete Jobs w/ Errors
+5  > Pause Printing
+6  > Resume Printing
+7  > Query SNMP for Model/Status
+8  > Show PowerShell Command to Print Test Page 
+9  > Restart Script
+10 > Exit           
 
         " -ForegroundColor DarkGray
     
@@ -162,8 +163,13 @@ GetPrintJobs
                     Write-Host "Completed SNMP query.`n"
                     Write-Host "    Printer Model   : $model"
                     Write-Host "    Display Readout : $display" }
-            8 { continue }
-            9 { exit }
+            8 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
+                Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
+                    Invoke-CimMethod -MethodName PrintTestPage"
+                Read-Host -Prompt "`nPress Enter to continue ..."
+                Clear-Host}
+            9 {  }
+            10 { exit }
             '' {  }
     
             Default { $printer = ( Get-Printer |
@@ -178,7 +184,7 @@ Clear-Host
 
 <#----------------------------END FUNCTION DEFINITIONS----------------------------#>
 
-while ($action -ne 3) {
+while ($true) {
     $Action = Read-Host -Prompt "
 Enter a number to select action:
         
