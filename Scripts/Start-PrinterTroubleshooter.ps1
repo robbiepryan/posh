@@ -75,7 +75,7 @@ function GetPrinterInformation {
         Select-Object Name,PortName,DriverName |
         Select-Object -First 1 )
     
-    do { 
+    while ($userInput2 -ne 10) { 
         Clear-Variable IP,pingTest,pingResult,model,display,user
 
         $status = (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").PrinterState
@@ -195,7 +195,7 @@ GetPrintJobs
                 Select-Object Name,PortName,DriverName |
                 Select-Object -First 1 ) }
         }
-    } until ( $userInput2 -eq 10 )
+    }
 
 Clear-Host
 }
