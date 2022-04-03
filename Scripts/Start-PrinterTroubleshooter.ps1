@@ -48,9 +48,15 @@ function ResumePrinting {
 
 function TestCommonPorts {
     Write-Host "Starting common ports test. This could take a while...`n"
+    $nmapPath = 'C:\Program Files (x86)\Nmap\nmap.exe'
+    if ((Test-Path $nmapPath) -eq $true) {
+        Set-Location "C:\Program Files (x86)\Nmap\"
+        nmap.exe -p 9100,515,631 $IP
+    } else {
     Test-NetConnection $IP -Port 9100 | Out-Null
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
+    }
     Write-Host "`nIf printer shows online but port tests fail, the printer IP is likely incorrect."
     Read-Host -Prompt "Press Enter to continue..."
     Clear-Host
