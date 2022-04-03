@@ -47,11 +47,13 @@ function ResumePrinting {
 }
 
 function TestCommonPorts {
-    Write-Host "Starting common ports test. This could take a while ...`n"
+    Write-Host "Starting common ports test. This could take a while...`n"
     Test-NetConnection $IP -Port 9100 | Out-Null
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
     Write-Host "`nIf printer shows online but port tests fail, the printer IP is likely incorrect."
+    Read-Host -Prompt "Press Enter to continue..."
+    Clear-Host
 }
 
 function GetPrinterInformation {
@@ -145,7 +147,7 @@ GetPrintJobs
 5  > Delete Jobs w/ Errors
 6  > Pause Printing
 7  > Resume Printing
-8  > Query SNMP for Model/Status
+8  > Query SNMP for Model/Display Readout
 9  > Show PowerShell Command to Print Test Page 
 10 > Restart Script
 11 > Exit           
@@ -164,19 +166,19 @@ GetPrintJobs
             5 { RemoveJobsWithErrors }
             6 { PausePrinting }
             7 { ResumePrinting }
-            8 { Write-Host "`nQuerying SNMP for printer model and status. This could take a little while ..."
+            8 { Write-Host "`nQuerying SNMP for printer model and display readout. This could take a while..."
                 $SNMP = New-Object -ComObject olePrn.OleSNMP
                 $SNMP.Open( $IP, "public" )
                 $model = $SNMP.Get( ".1.3.6.1.2.1.25.3.2.1.3.1" )
                 $display = $SNMP.Get( ".1.3.6.1.2.1.43.16.5.1.2.1.1" )
                 $SNMP.Close(  )
                     Write-Host "Completed SNMP query.`n"
-                    Write-Host "    Printer Model   : $model"
-                    Write-Host "    Display Readout : $display" }
+                    Write-Host "Printer Model   : $model"
+                    Write-Host "Display Readout : $display`n" }
             9 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
                 Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
                     Invoke-CimMethod -MethodName PrintTestPage"
-                Read-Host -Prompt "`nPress Enter to continue ..."
+                Read-Host -Prompt "`nPress Enter to continue..."
                 Clear-Host}
             10 {  }
             11 { exit }
