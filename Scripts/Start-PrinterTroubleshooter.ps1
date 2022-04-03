@@ -47,6 +47,7 @@ function ResumePrinting {
 }
 
 function TestCommonPorts {
+    Write-Host "Starting common ports test. This could take a while ..."
     Test-NetConnection $IP -Port 9100 | Out-Null
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
