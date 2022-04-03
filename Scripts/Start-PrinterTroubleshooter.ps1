@@ -155,12 +155,12 @@ GetPrintJobs
 7  > Resume Printing
 8  > Query SNMP for Model/Display Readout
 9  > Show PowerShell Command to Print Test Page 
-10 > Restart Script
+10 > Main Menu
 11 > Exit           
 
         " -ForegroundColor DarkGray
     
-    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or Select-Object an option from the menu`n" )
+    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or select an option from the menu`n" )
     
         Clear-Host
     
@@ -204,13 +204,13 @@ Clear-Host
 
 while ($true) {
     $Action = Read-Host -Prompt "
-Enter a number to Select-Object action:
+Enter a number to select action:
         
 1 - Get Printer Information
 2 - Find User Print Jobs
 3 - Exit
         
-Select-Objection"
+Selection"
     Clear-Host
     switch ($Action) {
         1 { GetPrinterInformation }
