@@ -57,7 +57,7 @@ function TestCommonPorts {
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
     }
-    Write-Host "`nIf printer shows online but port tests fail, the printer IP is likely incorrect."
+    Write-Host "`nIf printer shows online but ports are closed, the printer IP is likely incorrect."
     Read-Host -Prompt "Press Enter to continue..."
     Clear-Host
 }
@@ -160,7 +160,7 @@ GetPrintJobs
 
         " -ForegroundColor DarkGray
     
-    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or select an option from the menu`n" )
+    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or Select-Object an option from the menu`n" )
     
         Clear-Host
     
@@ -204,13 +204,13 @@ Clear-Host
 
 while ($true) {
     $Action = Read-Host -Prompt "
-Enter a number to select action:
+Enter a number to Select-Object action:
         
 1 - Get Printer Information
 2 - Find User Print Jobs
 3 - Exit
         
-Selection"
+Select-Objection"
     Clear-Host
     switch ($Action) {
         1 { GetPrinterInformation }
