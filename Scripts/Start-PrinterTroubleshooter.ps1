@@ -112,9 +112,9 @@ function GetPrinterInformation {
         $IP = ( Get-PrinterPort -Name ($printer).Portname |
             Select-Object -ExpandProperty PrinterHostAddress )
             
-        $pingTest = (Test-Connection $IP -Count 1).Status
+        $pingTest = (Test-Connection $IP -Count 1).StatusCode
     
-        if ( $pingTest -eq "Success" ){ 
+        if ( $pingTest -eq 0 ){ 
             $pingResult = "Online"
             $hostname = ([System.Net.Dns]::GetHostByName($env:computerName)).HostName
         }
