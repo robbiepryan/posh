@@ -6,7 +6,8 @@ function FindUserPrintJobs {
     Clear-Host
     Get-Printer | Get-PrintJob | Where-Object UserName -Like "*$user*" |
         Select-Object Username,PrinterName,DocumentName,SubmittedTime,JobStatus |
-        Sort-Object SubmittedTime    
+        Sort-Object SubmittedTime |
+        Format-Table -AutoSize
     }
 }
 
@@ -30,15 +31,16 @@ function RemoveTestPages {
         Remove-PrintJob
 }
 
-function GetUserPrintJobs {
+function GetPrintJobs {
     ( Get-PrintJob -PrinterName $($printer).Name |
         Select-Object UserName,DocumentName,SubmittedTime,JobStatus |
-        Sort-Object SubmittedTime )
+        Sort-Object SubmittedTime |
+        Format-Table -AutoSize)
 }
 
 function GetPrinterInformation {
     $userInput = ( Read-Host -Prompt "`nEnter printer name, or 'back' to go back" )
-
+    Clear-Host
     if ( $userInput -eq "back" ) { 
         Clear-Host
         break
@@ -80,17 +82,14 @@ Ping      : $pingResult" -ForegroundColor Red
         }
     
         Write-Host "
-Driver    : $(($printer).DriverName ) 
+Driver    : $(($printer).DriverName )`n`n"
         
-Job Queue :`n"
-            GetUserPrintJobs
+Write-Host "-----------------------------Job Queue-----------------------------" -ForegroundColor DarkGray
+GetPrintJobs
     
         if ( $pingResult -eq "Online" ){ 
-            Write-Host "
-    PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
-    
-            Write-Host "
-
+            Write-Host "PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
+            Write-Host "`n
 1 > Find User Print Jobs             
 2 > Print Test Page 
 3 > Delete Test Pages         
@@ -101,7 +100,7 @@ Job Queue :`n"
 
         " -ForegroundColor DarkGray
     
-    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or select an option from the menu" )
+    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or select an option from the menu`n" )
     
         Clear-Host
     
@@ -133,7 +132,7 @@ Job Queue :`n"
 Clear-Host
 }
 
-<#END FUNCTION DEFINITIONS#>
+<#----------------------------END FUNCTION DEFINITIONS----------------------------#>
 
 while ($action -ne 3) {
     $Action = Read-Host -Prompt "
@@ -144,7 +143,7 @@ Enter a number to select action:
 3 - Exit
         
 Selection"
-
+    Clear-Host
     switch ($Action) {
         1 { GetPrinterInformation }
         2 { FindUserPrintJobs }
