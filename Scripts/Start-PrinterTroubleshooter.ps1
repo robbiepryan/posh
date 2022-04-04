@@ -57,7 +57,7 @@ function TestCommonPorts {
     Test-NetConnection $IP -Port 515 | Out-Null
     Test-NetConnection $IP -Port 631 | Out-Null
     }
-    Write-Host "`nIf printer shows online but ports are closed, the printer IP is likely incorrect." -ForegroundColor Yellow
+    Write-Host "`nIf printer shows online but all ports are closed, the printer IP is likely incorrect." -ForegroundColor Yellow
     Read-Host -Prompt "`nPress Enter to continue..."
     Clear-Host
 }
