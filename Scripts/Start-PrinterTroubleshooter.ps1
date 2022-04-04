@@ -99,7 +99,7 @@ function GetPrinterInformation {
     
     while ($True) { 
         Clear-Variable IP,pingTest,pingResult,model,display,user
-<#Commented out status because it dramatically slows down the script.#>
+        <#Commented out status because it dramatically slows down the script.#>
         <#$status = (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").PrinterState
         switch ($status) {
             0 {$status = "Idle"}
