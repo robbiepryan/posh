@@ -71,17 +71,14 @@ function TestPrintCommand {
 }
 
 function SNMP {
-    Write-Host "`nQuerying SNMP for printer model and display readout. This could take a while..."
     $SNMP = New-Object -ComObject olePrn.OleSNMP
     $SNMP.Open( $IP, "public" )
     $model = $SNMP.Get( ".1.3.6.1.2.1.25.3.2.1.3.1" )
     $display = $SNMP.Get( ".1.3.6.1.2.1.43.16.5.1.2.1.1" )
     $SNMP.Close(  )
-        Write-Host "Completed SNMP query.`n"
-        Write-Host "Printer Model   : $model"
+        Write-Host "`nPrinter Model   : $model"
         Write-Host "Current Driver  : $(($printer).DriverName )"
         Write-Host "Display Readout : $display`n"
-        Read-Host "Press enter to continue..."
 }
 
 function GetPrinterInformation {
@@ -157,14 +154,14 @@ Name      : $(($printer).Name )
 IP        : $IP
 Ping      : $pingResult" -ForegroundColor Red
         }
-    
-        Write-Host "
-Driver    : $(($printer).DriverName )"
+
+SNMP
 #Status    : $status`n`n
 
+Write-Host "Jobs in queue   : $($( Get-PrintJob -PrinterName $($printer).Name ).Count)"
 Write-Host "----------------------------------▼First & Last Jobs in Queue▼----------------------------------" -ForegroundColor DarkGray
 GetFirstLastPrintJobs
-Write-Host "-----------------------------Jobs in queue: $($( Get-PrintJob -PrinterName $($printer).Name ).Count)-----------------------------" -ForegroundColor DarkGray
+Write-Host "------------------------------------------------------------------------------------------------`n" -ForegroundColor DarkGray
 
         if ( $pingResult -eq "Online" ){ 
             Write-Host "PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
