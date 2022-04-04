@@ -183,7 +183,7 @@ GetPrintJobs
                     Write-Host "Display Readout : $display`n" }
             9 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
                 Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
-                    Invoke-CimMethod -MethodName PrintTestPage"
+                    Invoke-CimMethod -MethodName PrintTestPage" -ForegroundColor Yellow
                 Read-Host -Prompt "`nPress Enter to continue..."
                 Clear-Host}
             10 {  }
