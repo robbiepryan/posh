@@ -7,7 +7,7 @@ function FindUserPrintJobs {
     Get-Printer | Get-PrintJob | Where-Object UserName -Like "*$user*" |
         Select-Object Username,PrinterName,DocumentName,SubmittedTime,JobStatus |
         Sort-Object SubmittedTime |
-        Format-Table -AutoSize
+        Format-List
     }
 }
 
@@ -35,7 +35,7 @@ function GetPrintJobs {
     ( Get-PrintJob -PrinterName $($printer).Name |
         Select-Object UserName,DocumentName,SubmittedTime,JobStatus |
         Sort-Object SubmittedTime |
-        Format-Table -AutoSize)
+        Format-List )
 }
 
 function PausePrinting {
@@ -97,7 +97,7 @@ function GetPrinterInformation {
         Select-Object Name,PortName,DriverName |
         Select-Object -First 1 )
     
-    while ($userInput2 -ne 10) { 
+    while ($True) { 
         Clear-Variable IP,pingTest,pingResult,model,display,user
 
         <#$status = (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").PrinterState
@@ -162,27 +162,19 @@ Ping      : $pingResult" -ForegroundColor Red
 Driver    : $(($printer).DriverName )"
 #Status    : $status`n`n
         
-Write-Host "-----------------------------Job Queue-----------------------------" -ForegroundColor DarkGray
+#Write-Host "-----------------------------Job Queue-----------------------------" -ForegroundColor DarkGray
 GetPrintJobs
     
         if ( $pingResult -eq "Online" ){ 
-            Write-Host "`nPowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
-            Write-Host "`n
-1  > Test Common Ports
-2  > Find User Print Jobs             
-3  > Print Test Page 
-4  > Delete Test Pages         
-5  > Delete Jobs w/ Errors
-6  > Pause Printing
-7  > Resume Printing
-8  > Query SNMP for Model/Display Readout
-9  > Show PowerShell Command to Print Test Page 
-10 > Main Menu
-11 > Exit           
-
-        " -ForegroundColor DarkGray
+            Write-Host "PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
+            Write-Host "
+1 > Test Common Ports                    6 > Pause Printing
+2 > Find User Print Jobs                 7 > Resume Printing
+3 > Print Test Page                      8 > Query SNMP for Model/Display Readout
+4 > Delete Test Pages from Queue         9 > Show PowerShell Command to Print Test Page 
+5 > Delete Jobs w/ Errors from Queue    10 > Exit" -ForegroundColor DarkGray
     
-    $userInput2 = ( Read-Host -Prompt "Enter new printer name, leave blank to test same printer again, or select an option from the menu`n" )
+    $userInput2 = ( Read-Host -Prompt "`nEnter new printer name, leave blank to test same printer again, or select an option from the menu`n" )
     
         Clear-Host
     
@@ -196,8 +188,7 @@ GetPrintJobs
             7 { ResumePrinting }
             8 { SNMP }
             9 { TestPrintCommand }
-            10 {  }
-            11 { exit }
+            10 { exit }
             '' {  }
     
             Default { $printer = ( Get-Printer |
