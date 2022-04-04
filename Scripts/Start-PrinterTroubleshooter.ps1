@@ -161,10 +161,11 @@ Ping      : $pingResult" -ForegroundColor Red
         Write-Host "
 Driver    : $(($printer).DriverName )"
 #Status    : $status`n`n
-        
-Write-Host "`n---------------------------▼First & Last Jobs in Queue▼---------------------------" -ForegroundColor DarkGray
-Write-Host "Jobs in queue: $($( Get-PrintJob -PrinterName $($printer).Name ).Count)"
+
+Write-Host "`nJobs in queue: $($( Get-PrintJob -PrinterName $($printer).Name ).Count)"
+Write-Host "----------------------------------▼First & Last Jobs in Queue▼----------------------------------" -ForegroundColor DarkGray
 GetFirstLastPrintJobs
+Write-Host "------------------------------------------------------------------------------------------------" -ForegroundColor DarkGray
 
         if ( $pingResult -eq "Online" ){ 
             Write-Host "PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
