@@ -31,11 +31,11 @@ function RemoveTestPages {
         Remove-PrintJob
 }
 
-function GetPrintJobs {
-    ( Get-PrintJob -PrinterName $($printer).Name |
+function GetFirstLastPrintJobs {
+    ( ( Get-PrintJob -PrinterName $($printer).Name )[0..-1] |
         Select-Object UserName,DocumentName,SubmittedTime,JobStatus |
         Sort-Object SubmittedTime |
-        Format-List )
+        Format-Table )
 }
 
 function PausePrinting {
@@ -162,9 +162,10 @@ Ping      : $pingResult" -ForegroundColor Red
 Driver    : $(($printer).DriverName )"
 #Status    : $status`n`n
         
-#Write-Host "-----------------------------Job Queue-----------------------------" -ForegroundColor DarkGray
-GetPrintJobs
-    
+Write-Host "`n---------------------------▼First & Last Jobs in Queue▼---------------------------" -ForegroundColor DarkGray
+Write-Host "Jobs in queue: $($( Get-PrintJob -PrinterName $($printer).Name ).Count)"
+GetFirstLastPrintJobs
+
         if ( $pingResult -eq "Online" ){ 
             Write-Host "PowerShell>  Add-printer -ConnectionName '\\$hostname\$(($printer).Name )'" -ForegroundColor Yellow }
             Write-Host "
