@@ -145,7 +145,8 @@ function GetPrinterInformation {
             Write-Host -Object "
 Name      : $(($printer).Name )
 IP        : $IP
-Ping      : $pingResult" -ForegroundColor Green 
+Ping      : $pingResult" -ForegroundColor Green
+SNMP
         }
         elseif ( 
             $pingResult -eq "Offline" ) { 
@@ -155,7 +156,6 @@ IP        : $IP
 Ping      : $pingResult" -ForegroundColor Red
         }
 
-SNMP
 #Status    : $status`n`n
 
 Write-Host "Jobs in queue   : $($( Get-PrintJob -PrinterName $($printer).Name ).Count)"
