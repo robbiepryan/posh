@@ -79,7 +79,9 @@ function SNMP {
     $SNMP.Close(  )
         Write-Host "Completed SNMP query.`n"
         Write-Host "Printer Model   : $model"
+        Write-Host "Current Driver  : $(($printer).DriverName )"
         Write-Host "Display Readout : $display`n"
+        Read-Host "Press enter to continue..."
 }
 
 function GetPrinterInformation {
