@@ -153,7 +153,7 @@ SNMP
             Write-Host "
 Name      : $(($printer).Name )
 IP        : $IP
-Ping      : $pingResult" -ForegroundColor Red
+Ping      : $pingResult`n" -ForegroundColor Red
         }
 
 #Status    : $status`n`n
