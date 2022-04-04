@@ -98,7 +98,7 @@ function GetPrinterInformation {
     while ($userInput2 -ne 10) { 
         Clear-Variable IP,pingTest,pingResult,model,display,user
 
-        $status = (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").PrinterState
+        <#$status = (get-wmiobject win32_printer -filter "name='$(($printer).Name)'").PrinterState
         switch ($status) {
             0 {$status = "Idle"}
             1 {$status = "Paused"}
@@ -127,7 +127,7 @@ function GetPrinterInformation {
             24 {$status = "Server_Unknown"}
             25 {$status = "Power Save"}
             Default { $status = "N/A" }
-        }
+        }#>
     
         $IP = ( Get-PrinterPort -Name ($printer).Portname |
             Select-Object -ExpandProperty PrinterHostAddress )
@@ -157,8 +157,8 @@ Ping      : $pingResult" -ForegroundColor Red
         }
     
         Write-Host "
-Driver    : $(($printer).DriverName )
-Status    : $status`n`n"
+Driver    : $(($printer).DriverName )"
+#Status    : $status`n`n
         
 Write-Host "-----------------------------Job Queue-----------------------------" -ForegroundColor DarkGray
 GetPrintJobs
