@@ -62,6 +62,26 @@ function TestCommonPorts {
     Clear-Host
 }
 
+function TestPrintCommand {
+    Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
+    Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
+        Invoke-CimMethod -MethodName PrintTestPage" -ForegroundColor Yellow
+    Read-Host -Prompt "`nPress Enter to continue..."
+    Clear-Host
+}
+
+function SNMP {
+    Write-Host "`nQuerying SNMP for printer model and display readout. This could take a while..."
+    $SNMP = New-Object -ComObject olePrn.OleSNMP
+    $SNMP.Open( $IP, "public" )
+    $model = $SNMP.Get( ".1.3.6.1.2.1.25.3.2.1.3.1" )
+    $display = $SNMP.Get( ".1.3.6.1.2.1.43.16.5.1.2.1.1" )
+    $SNMP.Close(  )
+        Write-Host "Completed SNMP query.`n"
+        Write-Host "Printer Model   : $model"
+        Write-Host "Display Readout : $display`n"
+}
+
 function GetPrinterInformation {
     $userInput = ( Read-Host -Prompt "`nEnter printer name, or 'back' to go back" )
     Clear-Host
@@ -172,20 +192,8 @@ GetPrintJobs
             5 { RemoveJobsWithErrors }
             6 { PausePrinting }
             7 { ResumePrinting }
-            8 { Write-Host "`nQuerying SNMP for printer model and display readout. This could take a while..."
-                $SNMP = New-Object -ComObject olePrn.OleSNMP
-                $SNMP.Open( $IP, "public" )
-                $model = $SNMP.Get( ".1.3.6.1.2.1.25.3.2.1.3.1" )
-                $display = $SNMP.Get( ".1.3.6.1.2.1.43.16.5.1.2.1.1" )
-                $SNMP.Close(  )
-                    Write-Host "Completed SNMP query.`n"
-                    Write-Host "Printer Model   : $model"
-                    Write-Host "Display Readout : $display`n" }
-            9 { Write-Host "`nTest Print from PowerShell to $(($printer).Name ) with the following command:`n"
-                Write-Host "Get-CimInstance Win32_Printer -Filter `"name LIKE '%$(($printer).Name )%'`" |   
-                    Invoke-CimMethod -MethodName PrintTestPage" -ForegroundColor Yellow
-                Read-Host -Prompt "`nPress Enter to continue..."
-                Clear-Host}
+            8 { SNMP }
+            9 { TestPrintCommand }
             10 {  }
             11 { exit }
             '' {  }
