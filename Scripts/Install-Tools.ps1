@@ -1,6 +1,6 @@
 $moduleURL = "https://raw.githubusercontent.com/robbiepryan/posh/main/Scripts/Get-vtsTools.ps1"
 $moduleName = "VTS"
-$filename = "VTS.psm1"
+$filename = "$moduleName.psm1"
 
 if ($env:USERNAME -eq "SYSTEM") {
     $modulePath = "$env:SystemDrive\Tools"
@@ -15,9 +15,7 @@ if (-not (Test-Path $modulePath\$moduleName)) {
     Out-Null
 }
 
-$content = Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
-Select-Object -ExpandProperty Content
-
-$content |
+Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
+Select-Object -ExpandProperty Content |
 Out-File -FilePath "$modulePath\$moduleName\$filename" -Force
 Import-Module -Verbose $modulePath\$moduleName
