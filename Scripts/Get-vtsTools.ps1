@@ -1,4 +1,4 @@
-function Search-VTSEventLog {
+function Search-vtsEventLog {
     [CmdletBinding()]
     Param(
         [Parameter(Position=0,Mandatory,
