@@ -17,7 +17,7 @@ if (-not (Test-Path $modulePath\$moduleName)) {
     Out-Null
 }
 
-Remove-Item "$modulePath\$moduleName\$filename" -Force
+Remove-Item "$modulePath\$moduleName\$filename" -Force 2>$null
 Get-Module VTS | Remove-Module
 
 Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
