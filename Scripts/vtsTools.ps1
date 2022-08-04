@@ -127,7 +127,7 @@ function rping {
             }
             else {
                 $failCount++
-                $failedTimes += (Get-Date)
+                $failedTimes += "$(Get-Date) - $failCount"
             }
             Clear-Host
             Write-Host "Pinging: $Domain - Start Time : $startTime"
@@ -137,9 +137,9 @@ function rping {
             Write-Host "`nFailed Ping Count    : $failCount" -ForegroundColor DarkRed
             
             if ($failCount -gt 0) {
-                Write-Host "`n-------Last 30 Failed Pings-------" -ForegroundColor DarkRed
+                Write-Host "`n--Last 30 Failed Pings--" -ForegroundColor DarkRed
                 $failedTimes | Select-Object -last 30 | Sort-Object -Descending
-                Write-Host "----------------------------------" -ForegroundColor DarkRed
+                Write-Host "------------------------" -ForegroundColor DarkRed
             }
     
             Start-Sleep 1    
