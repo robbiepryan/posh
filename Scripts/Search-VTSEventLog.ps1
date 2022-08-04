@@ -8,13 +8,12 @@ function Search-VTSEventLog {
         [array]$Logname = @(
             "System"
             "Application"
-            #"Security"
         )
         
     $result = @()
 
     foreach ($log in $Logname) {
-        Get-EventLog -LogName $log -EntryType Error, Warning -Newest 1 2>$null |
+        Get-EventLog -LogName $log -EntryType Error, Warning -Newest 500 2>$null |
         Where-Object Message -like "*$SearchTerm*" |
         Select-Object TimeGenerated, Message |
         ForEach-Object {
