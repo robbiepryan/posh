@@ -138,7 +138,7 @@ function rping {
             
             if ($failCount -gt 0) {
                 Write-Host "`n-------Last 30 Failed Pings-------" -ForegroundColor DarkRed
-                $failedTimes | Select-Object -last 30
+                $failedTimes | Select-Object -last 30 | Sort-Object -Descending
                 Write-Host "----------------------------------" -ForegroundColor DarkRed
             }
     
