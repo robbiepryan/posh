@@ -2,6 +2,8 @@ $moduleURL = "https://raw.githubusercontent.com/robbiepryan/posh/main/Scripts/vt
 $moduleName = "VTS"
 $filename = "$moduleName.psm1"
 
+Set-ExecutionPolicy Bypass -Scope Process
+
 if ($env:USERNAME -eq "SYSTEM") {
     $modulePath = "$env:SystemDrive\Tools"
 } else {
