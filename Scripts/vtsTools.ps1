@@ -153,9 +153,9 @@ function rping {
         Write-Output "Last Successful Ping : $lastSuccess" | Out-File $output -Append
         Write-Output "`nFailed Ping Count    : $failCount" | Out-File $output -Append
         if ($failCount -gt 0) {
-            Write-Output "`n---------Pings Failed at:---------" | Out-File $output -Append
+            Write-Output "`n----Pings Failed at:----" | Out-File $output -Append
             $failedTimes | Out-File $output -Append
-            Write-Output "----------------------------------" | Out-File $output -Append
+            Write-Output "------------------------" | Out-File $output -Append
         }
         Write-Host "logfile saved to $output"
     }
