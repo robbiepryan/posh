@@ -1,4 +1,4 @@
-$moduleURL = "https://raw.githubusercontent.com/robbiepryan/posh/main/Scripts/Get-vtsTools.ps1"
+$moduleURL = "https://raw.githubusercontent.com/robbiepryan/posh/main/Scripts/vtsTools.ps1"
 $moduleName = "VTS"
 $filename = "$moduleName.psm1"
 
