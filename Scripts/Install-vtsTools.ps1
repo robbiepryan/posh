@@ -18,6 +18,7 @@ if (-not (Test-Path $modulePath\$moduleName)) {
 }
 
 Remove-Item "$modulePath\$moduleName\$filename" -Force
+Get-Module VTS | Remove-Module
 
 Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
 Select-Object -ExpandProperty Content |
