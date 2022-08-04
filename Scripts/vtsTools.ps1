@@ -107,7 +107,7 @@ function rping {
         [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true)]
-        [ipaddress]$IP
+        $IP
     )
     
     try {
@@ -155,11 +155,6 @@ function rping {
             $failedTimes | Out-File $output -Append
             Write-Output "----------------------------------" | Out-File $output -Append
         }
-        
-        $prompt = New-Object -ComObject wscript.shell
-        $userInput = $prompt.Popup("Do you want to open the log file?", 0, "Open Log File", 4)
-        if ($userInput -eq 6) {    
-            Invoke-Item $output
-        }
+        Write-Output "logfile saved to $output"
     }
 }
