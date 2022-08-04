@@ -1,14 +1,14 @@
 function Search-vtsEventLog {
     [CmdletBinding()]
     Param(
-        [Parameter(Position=0,Mandatory,
+        [Parameter(Position = 0, Mandatory,
             ParameterSetName = 'SearchTerm')]
         [string]$SearchTerm
-        )
-        [array]$Logname = @(
-            "System"
-            "Application"
-        )
+    )
+    [array]$Logname = @(
+        "System"
+        "Application"
+    )
         
     $result = @()
 
@@ -71,5 +71,33 @@ function Get-vtsMappedDrive {
 
         Write-Verbose "No mapped drives were found"
 
+    }
+}
+
+function Block-vtsWindows11Upgrade {
+    $buildNumber = [System.Environment]::OSVersion.Version.Build
+
+    switch ($buildNumber) {
+        19044 {
+            cmd /c 'reg add HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate /v TargetReleaseversion /t REG_DWORD /d 1'
+            cmd /c 'reg add HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate /v TargetReleaseversionInfo /t REG_SZ /d 21H2'
+            if ($?) {
+                Write-Host 'Success - Current Version (21H2)' -ForegroundColor Green
+            }
+            else {
+                Write-Host "Failed" -ForegroundColor Red
+            }
+        }
+        19043 {
+            cmd /c 'reg add HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate /v TargetReleaseversion /t REG_DWORD /d 1'
+            cmd /c 'reg add HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate /v TargetReleaseversionInfo /t REG_SZ /d 21H1'
+            if ($?) {
+                Write-Host 'Success - Current Version (21H1)' -ForegroundColor Green
+            }
+            else {
+                Write-Host "Failed" -ForegroundColor Red
+            }
+        }
+        Default { Write-Host "Script only works for Windows 10 versions 21H1 and 21H2" }
     }
 }
