@@ -112,7 +112,7 @@ function rping {
     
     try {
         $output = "~\Desktop\PingResults.log"
-    
+        $startTime = (Get-Date)
         $lastSuccess = $null
         $failedTimes = @()
     
@@ -130,7 +130,7 @@ function rping {
                 $failedTimes += (Get-Date)
             }
             Clear-Host
-            Write-Host "Pinging: $Domain"
+            Write-Host "Pinging: $Domain - Start Time : $startTime"
             Write-Host "`nPress Ctrl-C to exit" -ForegroundColor Yellow
             Write-Host "`nSuccessful Ping Count: $successCount" -ForegroundColor Green
             Write-Host "Last Successful Ping : $lastSuccess" -ForegroundColor Green
@@ -146,7 +146,7 @@ function rping {
         }
     }
     finally {
-        Write-Output "Pinging: $Domain`n" | Out-File $output
+        Write-Output "Pinging: $Domain - Start Time : $startTime`n" | Out-File $output
         Write-Output "Successful Ping Count: $successCount" | Out-File $output -Append
         Write-Output "Last Successful Ping : $lastSuccess" | Out-File $output -Append
         Write-Output "`nFailed Ping Count    : $failCount" | Out-File $output -Append
