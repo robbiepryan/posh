@@ -101,3 +101,65 @@ function Block-vtsWindows11Upgrade {
         Default { Write-Host "Script only works for Windows 10 versions 21H1 and 21H2" }
     }
 }
+
+function rping {
+    Param(
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true)]
+        [ipaddress]$IP
+    )
+    
+    try {
+        $output = "~\Desktop\PingResults.log"
+    
+        $lastSuccess = $null
+        $failedTimes = @()
+    
+        $successCount = 0
+        $failCount = 0
+    
+        while ($true) {
+            Test-Connection $IP -Count 1 2>$null | Out-Null
+            if ($?) {
+                $successCount++
+                $lastSuccess = (Get-Date)
+            }
+            else {
+                $failCount++
+                $failedTimes += (Get-Date)
+            }
+            Clear-Host
+            Write-Host "Pinging: $IP"
+            Write-Host "`nPress Ctrl-C to exit" -ForegroundColor Yellow
+            Write-Host "`nSuccessful Ping Count: $successCount" -ForegroundColor Green
+            Write-Host "Last Successful Ping : $lastSuccess" -ForegroundColor Green
+            Write-Host "`nFailed Ping Count    : $failCount" -ForegroundColor DarkRed
+            
+            if ($failCount -gt 0) {
+                Write-Host "`n---------Pings Failed at:---------" -ForegroundColor DarkRed
+                $failedTimes
+                Write-Host "----------------------------------" -ForegroundColor DarkRed
+            }
+    
+            Start-Sleep 1    
+        }
+    }
+    finally {
+        Write-Output "Pinging: $IP`n" | Out-File $output
+        Write-Output "Successful Ping Count: $successCount" | Out-File $output -Append
+        Write-Output "Last Successful Ping : $lastSuccess" | Out-File $output -Append
+        Write-Output "`nFailed Ping Count    : $failCount" | Out-File $output -Append
+        if ($failCount -gt 0) {
+            Write-Output "`n---------Pings Failed at:---------" | Out-File $output -Append
+            $failedTimes | Out-File $output -Append
+            Write-Output "----------------------------------" | Out-File $output -Append
+        }
+        
+        $prompt = New-Object -ComObject wscript.shell
+        $userInput = $prompt.Popup("Do you want to open the log file?", 0, "Open Log File", 4)
+        if ($userInput -eq 6) {    
+            Invoke-Item $output
+        }
+    }
+}
