@@ -107,7 +107,7 @@ function rping {
         [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true)]
-        $IP
+        $Domain
     )
     
     try {
@@ -120,7 +120,7 @@ function rping {
         $failCount = 0
     
         while ($true) {
-            Test-Connection $IP -Count 1 2>$null | Out-Null
+            Test-Connection $Domain -Count 1 2>$null | Out-Null
             if ($?) {
                 $successCount++
                 $lastSuccess = (Get-Date)
@@ -130,7 +130,7 @@ function rping {
                 $failedTimes += (Get-Date)
             }
             Clear-Host
-            Write-Host "Pinging: $IP"
+            Write-Host "Pinging: $Domain"
             Write-Host "`nPress Ctrl-C to exit" -ForegroundColor Yellow
             Write-Host "`nSuccessful Ping Count: $successCount" -ForegroundColor Green
             Write-Host "Last Successful Ping : $lastSuccess" -ForegroundColor Green
@@ -146,7 +146,7 @@ function rping {
         }
     }
     finally {
-        Write-Output "Pinging: $IP`n" | Out-File $output
+        Write-Output "Pinging: $Domain`n" | Out-File $output
         Write-Output "Successful Ping Count: $successCount" | Out-File $output -Append
         Write-Output "Last Successful Ping : $lastSuccess" | Out-File $output -Append
         Write-Output "`nFailed Ping Count    : $failCount" | Out-File $output -Append
