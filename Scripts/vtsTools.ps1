@@ -1,3 +1,5 @@
+Get-Module VTS | Remove-Module
+
 function Search-vtsEventLog {
     [CmdletBinding()]
     Param(
@@ -155,6 +157,6 @@ function rping {
             $failedTimes | Out-File $output -Append
             Write-Output "----------------------------------" | Out-File $output -Append
         }
-        Write-Output "logfile saved to $output"
+        Write-Host "logfile saved to $output"
     }
 }
