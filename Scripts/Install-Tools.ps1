@@ -4,8 +4,7 @@ $filename = "VTS.psm1"
 
 if ($env:USERNAME -eq "SYSTEM") {
     $modulePath = "$env:SystemDrive\Tools"
-}
-else {
+} else {
     $modulePath = $env:PSModulePath -split ";" |
     Select-String "$env:USERNAME" |
     Select-Object -First 1
