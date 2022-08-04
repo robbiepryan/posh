@@ -1,5 +1,3 @@
-Get-Module VTS | Remove-Module
-
 function Search-vtsEventLog {
     [CmdletBinding()]
     Param(

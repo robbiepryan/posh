@@ -17,6 +17,8 @@ if (-not (Test-Path $modulePath\$moduleName)) {
     Out-Null
 }
 
+Remove-Item "$modulePath\$moduleName\$filename" -Force
+
 Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
 Select-Object -ExpandProperty Content |
 Out-File -FilePath "$modulePath\$moduleName\$filename" -Force
