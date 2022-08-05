@@ -111,7 +111,10 @@ function Start-vtsPingReport {
     )
     
     try {
-        $output = "~\Desktop\PingResults.log"
+        $output = "C:\temp\PingResults-$domain.log"
+        if (-not (Test-Path $output)) {
+            New-Item -Path $output -ItemType Directory -Force | Out-Null
+        }
         $startTime = (Get-Date)
         $lastSuccess = $null
         $failedTimes = @()
