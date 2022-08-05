@@ -121,16 +121,18 @@ function Start-vtsPingReport {
     
         $successCount = 0
         $failCount = 0
+        $totalPingCount = 0
     
         while ($true) {
             Test-Connection $Domain -Count 1 2>$null | Out-Null
+            $totalPingCount++
             if ($?) {
                 $successCount++
                 $lastSuccess = (Get-Date)
             }
             else {
                 $failCount++
-                $failedTimes += "$(Get-Date) - $failCount"
+                $failedTimes += "$(Get-Date) - $totalPingCount++"
             }
             Clear-Host
             Write-Host "Start Time : $startTime"
