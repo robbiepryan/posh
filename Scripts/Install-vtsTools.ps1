@@ -32,7 +32,7 @@ Select-Object -ExpandProperty Name |
 Sort-Object |
 ForEach-Object {
     $commands += [pscustomobject]@{
-        Installed_Commands = $_
+        'Installed Commands' = $_
     }
 }
 
