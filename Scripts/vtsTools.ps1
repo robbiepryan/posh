@@ -184,7 +184,6 @@ function Out-PhoneticAlphabet
 {
     [CmdletBinding(SupportsShouldProcess=$true,
                   ConfirmImpact='Low')]
-    [Alias('Out-NATOAlphabet')]
     [OutputType([String])]
     Param
     (
