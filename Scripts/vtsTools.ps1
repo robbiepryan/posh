@@ -102,7 +102,7 @@ function Block-vtsWindows11Upgrade {
     }
 }
 
-function rping {
+function Start-vtsPingReport {
     Param(
         [Parameter(
             Mandatory = $true,
