@@ -23,4 +23,17 @@ Get-Module VTS | Remove-Module
 Invoke-WebRequest -uri $moduleURL -UseBasicParsing |
 Select-Object -ExpandProperty Content |
 Out-File -FilePath "$modulePath\$moduleName\$filename" -Force
-Import-Module -Verbose $modulePath\$moduleName
+Import-Module $modulePath\$moduleName
+
+$commands = @()
+
+Get-Command -Module VTS |
+Select-Object -ExpandProperty Name |
+Sort-Object |
+ForEach-Object {
+    $commands += [pscustomobject]@{
+        Installed_Commands = $_
+    }
+}
+
+$commands
