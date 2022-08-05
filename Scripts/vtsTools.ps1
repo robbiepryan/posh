@@ -126,26 +126,27 @@ function Start-vtsPingReport {
         while ($true) {
             $totalPingCount++
             $pingResult = Test-Connection $Domain -Count 1 2>$null
-            if ($pingResult.StatusCode -eq 0) {
+            if (($pingResult.StatusCode -eq 0) -or ($pingResult.Status -eq "Success")) {
                 $successCount++
                 $lastSuccess = (Get-Date)
             }
             else {
                 $failCount++
-                $failedTimes += "$(Get-Date) - $totalPingCount"
+                $failedTimes += "$(Get-Date) - Ping#$totalPingCount"
             }
             Clear-Host
             Write-Host "Start Time : $startTime"
             Write-Host "`nPinging: $Domain"
             Write-Host "`nPress Ctrl-C to exit" -ForegroundColor Yellow
-            Write-Host "`nSuccessful Ping Count: $successCount" -ForegroundColor Green
-            Write-Host "Last Successful Ping : $lastSuccess" -ForegroundColor Green
-            Write-Host "`nFailed Ping Count    : $failCount" -ForegroundColor DarkRed
+            Write-Host "`nTotal Ping Count     : $totalPingCount"
+            Write-Host "Successful Ping Count: $successCount" -ForegroundColor Green
+            Write-Host "Failed Ping Count    : $failCount" -ForegroundColor DarkRed
+            Write-Host "`nLast Successful Ping : $lastSuccess" -ForegroundColor Green
             
             if ($failCount -gt 0) {
-                Write-Host "`n--Last 30 Failed Pings--" -ForegroundColor DarkRed
+                Write-Host "`n-----Last 30 Failed Pings-----" -ForegroundColor DarkRed
                 $failedTimes | Select-Object -last 30 | Sort-Object -Descending
-                Write-Host "------------------------" -ForegroundColor DarkRed
+                Write-Host "------------------------------" -ForegroundColor DarkRed
             }
     
             Start-Sleep 1    
@@ -154,14 +155,16 @@ function Start-vtsPingReport {
     finally {
         Write-Host "logfile saved to $output"
         Write-Output "Start Time : $startTime" | Out-File $output
-        Write-Output "Pinging: $Domain" | Out-File $output -Append
+        Write-Output "End Time   : $(Get-Date)" | Out-File $output -Append
+        Write-Output "`nPinging: $Domain" | Out-File $output -Append
+        Write-Output "`nTotal Ping Count     : $totalPingCount" | Out-File $output -Append
         Write-Output "Successful Ping Count: $successCount" | Out-File $output -Append
-        Write-Output "Last Successful Ping : $lastSuccess" | Out-File $output -Append
-        Write-Output "`nFailed Ping Count    : $failCount" | Out-File $output -Append
+        Write-Output "Failed Ping Count    : $failCount" | Out-File $output -Append
+        Write-Output "`nLast Successful Ping : $lastSuccess" | Out-File $output -Append
         if ($failCount -gt 0) {
-            Write-Output "`n----Pings Failed at:----" | Out-File $output -Append
+            Write-Output "`n-------Pings Failed at:-------" | Out-File $output -Append
             $failedTimes | Out-File $output -Append
-            Write-Output "------------------------" | Out-File $output -Append
+            Write-Output "------------------------------" | Out-File $output -Append
         }
     }
 }
