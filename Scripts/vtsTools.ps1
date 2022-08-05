@@ -150,6 +150,7 @@ function Start-vtsPingReport {
         }
     }
     finally {
+        Write-Host "logfile saved to $output"
         Write-Output "Start Time : $startTime" | Out-File $output
         Write-Output "Pinging: $Domain" | Out-File $output -Append
         Write-Output "Successful Ping Count: $successCount" | Out-File $output -Append
@@ -160,7 +161,6 @@ function Start-vtsPingReport {
             $failedTimes | Out-File $output -Append
             Write-Output "------------------------" | Out-File $output -Append
         }
-        Write-Host "logfile saved to $output"
     }
 }
 
