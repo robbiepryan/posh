@@ -113,7 +113,7 @@ function Start-vtsPingReport {
     try {
         $output = "C:\temp\PingResults-$domain.log"
         if (-not (Test-Path $output)) {
-            New-Item -Path $output -ItemType Directory -Force | Out-Null
+            New-Item -Path $output -ItemType File -Force | Out-Null
         }
         $startTime = (Get-Date)
         $lastSuccess = $null
