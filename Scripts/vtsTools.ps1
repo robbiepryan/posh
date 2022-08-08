@@ -292,11 +292,11 @@ function Get-vtsDisplayConnectionType {
         $manufacturer = $monitor.ManufacturerName
         $name = $monitor.UserFriendlyName
         $connectionType = ($connections | Where-Object { $_.InstanceName -eq $monitor.InstanceName }).VideoOutputTechnology
-        if ($manufacturer -ne $null) { $manufacturer = [System.Text.Encoding]::ASCII.GetString($manufacturer -ne 0) }
-        if ($name -ne $null) { $name = [System.Text.Encoding]::ASCII.GetString($name -ne 0) }
+        if ($null -ne $manufacturer) { $manufacturer = [System.Text.Encoding]::ASCII.GetString($manufacturer -ne 0) }
+        if ($null -ne $name) { $name = [System.Text.Encoding]::ASCII.GetString($name -ne 0) }
         $connectionType = $adapterTypes."$connectionType"
-        if ($connectionType -eq $null) { $connectionType = 'Unknown' }
-        if (($manufacturer -ne $null) -or ($name -ne $null)) { $arrMonitors += "$manufacturer $name ($connectionType)" }
+        if ($null -eq $connectionType) { $connectionType = 'Unknown' }
+        if (($null -ne $manufacturer) -or ($null -ne $name)) { $arrMonitors += "$manufacturer $name ($connectionType)" }
     }
     $i = 0
     $strMonitors = ''
