@@ -136,7 +136,7 @@ function Start-vtsPingReport {
             }
             Clear-Host
             Write-Host "Start Time : $startTime"
-            Write-Host "`nPinging: $Domain"
+            Write-Host "`nPing Target: $Domain"
             Write-Host "`nPress Ctrl-C to exit" -ForegroundColor Yellow
             Write-Host "`nTotal Ping Count     : $totalPingCount"
             Write-Host "Successful Ping Count: $successCount" -ForegroundColor Green
