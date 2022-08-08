@@ -8,16 +8,16 @@ try {
         New-Item -Path $downloadPath -ItemType Directory
     }
     
-    # Download Installer
+    # Download installer
     Invoke-WebRequest -Uri $link -UseBasicParsing -OutFile "$downloadPath\$downloadName"
 
     # Get original UAC settings
     $UAC = (Get-ItemProperty -Path REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin).ConsentPromptBehaviorAdmin
 
-    # Disable UAC to complete the uninstall
+    # Disable UAC to complete the install
     Set-ItemProperty -Path REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Value 0
 
-    # Start Silent Install
+    # Start silent install
     & $downloadPath\$downloadName -s -norestart ACCEPT_EULA=1
 }
 finally {
