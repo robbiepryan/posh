@@ -236,7 +236,7 @@ function Out-vtsPhoneticAlphabet {
         'x' = 'xray'
         'y' = 'yankee'
         'z' = 'zulu'
-        '.' = '(POINT)'
+        '.' = '(PERIOD)'
         '-' = '(DASH)'
     }
 
