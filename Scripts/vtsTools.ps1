@@ -31,7 +31,7 @@ function Search-vtsEventLog {
         }
     }
 
-    $result | Format-List
+    $result | Format-Table -AutoSize -Wrap
 }
 
 function Get-vtsMappedDrive {
