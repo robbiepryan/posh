@@ -12,6 +12,13 @@ function GetCodes {
         Select-String '<text>Token code: ' |
         Select-Object -ExpandProperty Line) -split "<text>Token code: " -replace "</text>", "" |
     Select-String ^\d)
+
+    # BTC
+    (($toast |
+        Select-String '<text>SMS passcodes: ' |
+        Select-Object -ExpandProperty Line) -split "<text>SMS passcodes: " -replace "</text>", "" |
+    Select-String ^\d)
+
 }
 
 $codes = @{}
@@ -28,17 +35,6 @@ While ($true) {
         if ($code -notin $codes.Keys) {
             $code | Set-Clipboard
             $codes.Add("$code", "")
-            # Uncomment the following lines to enable auto-type
-            # #Add the required assembly
-            # add-type -AssemblyName System.Windows.Forms
-            # #Wait 100 milliseconds
-            # Start-Sleep -Milliseconds 200
-            # #Paste Contents
-            # $clipboard = (Get-Clipboard).ToCharArray()
-            # foreach ($clip in $clipboard) {
-            #     [System.Windows.Forms.SendKeys]::SendWait("{$clip}")
-            # }
-            # [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
         }
     }
 }
