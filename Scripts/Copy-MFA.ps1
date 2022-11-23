@@ -34,7 +34,11 @@ While ($true) {
     foreach ($code in $UpdatedCodes) {
         if ($code -notin $codes.Keys) {
             $code | Set-Clipboard
+            [System.Console]::Beep(5000,5)
             $codes.Add("$code", "")
         }
     }
 }
+
+
+[System.Console]::Beep(37,37)
