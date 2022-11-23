@@ -34,8 +34,6 @@ While ($true) {
     foreach ($code in $UpdatedCodes) {
         if ($code -notin $codes.Keys) {
             $code | Set-Clipboard
-            # Flash screen
-            Start-Process cmd -WindowStyle Maximized ; Start-Sleep -Milliseconds 50 ; get-process cmd | stop-process
             # Chirp
             [System.Console]::Beep(700, 5)
             $codes.Add("$code", "")
