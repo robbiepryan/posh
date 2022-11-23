@@ -39,6 +39,3 @@ While ($true) {
         }
     }
 }
-
-
-[System.Console]::Beep(37,37)
