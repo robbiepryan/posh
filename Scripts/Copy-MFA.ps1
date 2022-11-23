@@ -26,7 +26,7 @@ $codes = @{}
 GetCodes |
 ForEach-Object {
     $codes.Add("$_", "")
-}
+} 2>$null
 
 While ($true) {
     Start-Sleep 1
@@ -34,7 +34,8 @@ While ($true) {
     foreach ($code in $UpdatedCodes) {
         if ($code -notin $codes.Keys) {
             $code | Set-Clipboard
-            [System.Console]::Beep(700,5)
+            # Chirp
+            [System.Console]::Beep(700, 5)
             $codes.Add("$code", "")
         }
     }
