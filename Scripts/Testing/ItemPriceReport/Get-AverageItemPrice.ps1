@@ -31,7 +31,7 @@ function Get-AverageItemPrice {
         $body = @{
             "keywords"           = $searchTerm
             "excluded_keywords"  = ""
-            "max_search_results" = "5"
+            "max_search_results" = "60"
             "max_pages"          = "5"
             "remove_outliers"    = "true"
             "site_id"            = "0"
