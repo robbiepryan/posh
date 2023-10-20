@@ -5,58 +5,47 @@ function Get-AverageItemPrice {
         [Parameter(Mandatory = $true)]
         [string]$csvOutPath,
         [Parameter(Mandatory = $true)]
-        [string]$appId
+        [string]$key
     )
-
-    # Define your endpoint - this example uses the Finding API's 'findCompletedItems' call
-    $endpointUrl = "https://svcs.ebay.com/services/search/FindingService/v1"
 
     $enrichedData = @() # Empty array to collect enriched data
 
     $csvContent = Import-Csv -Path $csvPath
 
     foreach ($row in $csvContent) {
-        $searchTerm = (("$($row.scale) $($row.manufacturer) $($row.item)").Trim()).Replace("  ", " ")
-    
-        # Define your request parameters
-        $params = @{
-            "OPERATION-NAME"       = "findCompletedItems"
-            "SERVICE-VERSION"      = "1.13.0"
-            "SECURITY-APPNAME"     = $appId
-            "RESPONSE-DATA-FORMAT" = "XML"
-            "REST-PAYLOAD"         = $true
-            "keywords"             = "$searchTerm"
+        #$searchTerm = (("$($row.scale) $($row.manufacturer) $($row.item)").Trim()).Replace("  ", " ")
+        $searchTerm = (($row.item).Trim()).Replace("  ", " ")
+
+        # Make a request to the RapidAPI endpoint for Ebay Average Selling Price
+        $headers = @{}
+        $headers.Add("content-type", "application/json")
+        $headers.Add("X-RapidAPI-Key", $key)
+        $headers.Add("X-RapidAPI-Host", "ebay-average-selling-price.p.rapidapi.com")
+        $body = @"
+        {
+            "keywords": "$searchTerm",
+            "excluded_keywords": "",
+            "max_search_results": "60",
+            "max_pages": "5",
+            "category_id": "220",
+            "remove_outliers": "true",
+            "site_id": "0"
         }
-    
+"@
+        $rapidApiResponse = Invoke-RestMethod -Uri 'https://ebay-average-selling-price.p.rapidapi.com/findCompletedItems' -Method POST -Headers $headers -ContentType 'application/json' -Body $body
+        $rapidApiResponse
+
         try {
-            # Call the API
-            $response = Invoke-RestMethod -Uri $endpointUrl -Method Get -Headers $params
-    
-            # Parse and process the response
-            $items = $response.findCompletedItemsResponse.searchResult.item
-    
-            # Collect prices and compute the average
-            $totalPrice = 0
-            $itemCount = 0
-    
-            $items | ForEach-Object {
-                $price = [double]$_.sellingStatus.currentPrice."#text"
-                $totalPrice += $price
-                $itemCount++
-            }
-    
-            $averagePrice = $totalPrice / $itemCount
-    
             # Store the average price with the current row data
-            $row | Add-Member -Name "AveragePrice" -MemberType NoteProperty -Value $averagePrice
+            $row | Add-Member -Name "AveragePrice" -MemberType NoteProperty -Value $rapidApiResponse.average_price
+            $row | Add-Member -Name "MedianPrice" -MemberType NoteProperty -Value $rapidApiResponse.median_price
+            $row | Add-Member -Name "MinimumPrice" -MemberType NoteProperty -Value $rapidApiResponse.min_price
+            $row | Add-Member -Name "MaximumPrice" -MemberType NoteProperty -Value $rapidApiResponse.max_price
             $enrichedData += $row
-    
         }
         catch {
             Write-Host "Error fetching data for searchTerm: $searchTerm. Error: $_"
         }
     }
-    
     $enrichedData | Export-Csv -Path $csvOutPath -NoTypeInformation
 }
-
