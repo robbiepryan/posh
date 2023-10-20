@@ -5,6 +5,8 @@ function Get-AverageItemPrice {
         [Parameter(Mandatory = $true)]
         [string]$csvOutPath,
         [Parameter(Mandatory = $true)]
+        [string]$csvOutPath2,
+        [Parameter(Mandatory = $true)]
         [string]$key
     )
 
@@ -66,5 +68,5 @@ function Get-AverageItemPrice {
 
     }
     $enrichedData | Export-Csv -Path $csvOutPath -NoTypeInformation
-    $products | Export-Csv -Path "C:\temp\csv-OUT2.csv" -NoTypeInformation
+    $products | Export-Csv -Path $csvOutPath2 -NoTypeInformation
 }
