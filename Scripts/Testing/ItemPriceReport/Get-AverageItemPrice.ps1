@@ -1,10 +1,12 @@
 function Get-AverageItemPrice {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$csv = "C:\csv.csv",
+        [string]$csvIn = "C:\csv.csv",
         [Parameter(Mandatory = $true)]
         [string]$csvOut = "C:\csvOut.csv"
     )
+
+    $csv = Import-Csv $csvIn
 
     # Define your API credentials
     $appId = "YOUR_APP_ID"
