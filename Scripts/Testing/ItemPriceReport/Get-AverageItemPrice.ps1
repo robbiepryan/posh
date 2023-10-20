@@ -1,47 +1,62 @@
 function Get-AverageItemPrice {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$csvIn = "C:\csv.csv",
+        [string]$csvPath,
         [Parameter(Mandatory = $true)]
-        [string]$csvOut = "C:\csvOut.csv"
+        [string]$csvOutPath,
+        [Parameter(Mandatory = $true)]
+        [string]$appId
     )
-
-    $csv = Import-Csv $csvIn
-
-    # Define your API credentials
-    $appId = "YOUR_APP_ID"
 
     # Define your endpoint - this example uses the Finding API's 'findCompletedItems' call
     $endpointUrl = "https://svcs.ebay.com/services/search/FindingService/v1"
 
-    foreach ($row in $csv) {
+    $enrichedData = @() # Empty array to collect enriched data
+
+    $csvContent = Import-Csv -Path $csvPath
+
+    foreach ($row in $csvContent) {
         $searchTerm = (("$($row.scale) $($row.manufacturer) $($row.item)").Trim()).Replace("  ", " ")
+    
         # Define your request parameters
         $params = @{
             "OPERATION-NAME"       = "findCompletedItems"
             "SERVICE-VERSION"      = "1.13.0"
             "SECURITY-APPNAME"     = $appId
-            "RESPONSE-DATA-FORMAT" = "XML" # or "JSON" if you prefer
+            "RESPONSE-DATA-FORMAT" = "XML"
             "REST-PAYLOAD"         = $true
-            "keywords"             = "$searchTerm" # replace with specific items you're searching for
-            # Add other parameters as necessary
+            "keywords"             = "$searchTerm"
         }
-
-        # Call the API
-        $response = Invoke-RestMethod -Uri $endpointUrl -Method Get -Headers $params
-
-        # Parse and process the response
-        # This step will vary based on your needs and the structure of the API response
-        $items = $response.findCompletedItemsResponse.searchResult.item
-
-        # Example: Print the title and price of each item
-        $items | ForEach-Object {
-            $title = $_.title
-            $price = $_.sellingStatus.currentPrice."#text"
-            Write-Host "Title: $title, Price: $price"
-            $csv | Add-Member -Name "Title" -MemberType NoteProperty -Value $title
-            $csv | Add-Member -Name "Price" -MemberType NoteProperty -Value $price
+    
+        try {
+            # Call the API
+            $response = Invoke-RestMethod -Uri $endpointUrl -Method Get -Headers $params
+    
+            # Parse and process the response
+            $items = $response.findCompletedItemsResponse.searchResult.item
+    
+            # Collect prices and compute the average
+            $totalPrice = 0
+            $itemCount = 0
+    
+            $items | ForEach-Object {
+                $price = [double]$_.sellingStatus.currentPrice."#text"
+                $totalPrice += $price
+                $itemCount++
+            }
+    
+            $averagePrice = $totalPrice / $itemCount
+    
+            # Store the average price with the current row data
+            $row | Add-Member -Name "AveragePrice" -MemberType NoteProperty -Value $averagePrice
+            $enrichedData += $row
+    
+        }
+        catch {
+            Write-Host "Error fetching data for searchTerm: $searchTerm. Error: $_"
         }
     }
-    $csv | Export-Csv -Path $csvOut -NoTypeInformation
+    
+    $enrichedData | Export-Csv -Path $csvOutPath -NoTypeInformation
 }
+
