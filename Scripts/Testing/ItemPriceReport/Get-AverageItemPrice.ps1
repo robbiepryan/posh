@@ -45,7 +45,7 @@ function Get-AverageItemPrice {
     $products = @()
 
     # Import the CSV file and select the first 3 rows after skipping 26 rows
-    $csvContent = Import-Csv -Path $csvPath | Select-Object -First 3 -Skip 26
+    $csvContent = Import-Csv -Path $csvPath
 
     $itemNumber = 0
 
