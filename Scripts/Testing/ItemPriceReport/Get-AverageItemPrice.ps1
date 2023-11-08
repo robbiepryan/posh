@@ -9,16 +9,19 @@ The script takes a CSV file as input, which contains information about various i
 Path to the input CSV file.
 
 .PARAMETER AveragePriceOutput
-Path to the output CSV file where the enriched data will be stored.
+Path to the output CSV file where the enriched data with average prices will be stored.
 
 .PARAMETER CurrentListingOutput
-Path to the output CSV file where the current listings will be stored.
+Path to the output CSV file where the detailed information about the current listings for each item will be stored.
 
-.PARAMETER token
+.PARAMETER eBayToken
 eBay API token.
 
+.PARAMETER OpenAIKey
+OpenAI API key.
+
 .EXAMPLE
-PS C:\> .\Get-AverageItemPrice.ps1 -csvPath "C:\input.csv" -AveragePriceOutput "C:\output.csv" -CurrentListingOutput "C:\listings.csv" -token "your-ebay-api-token"
+PS C:\> .\Get-AverageItemPrice.ps1 -csvPath "C:\input.csv" -AveragePriceOutput "C:\output.csv" -CurrentListingOutput "C:\listings.csv" -eBayToken "your-ebay-api-token" -OpenAIKey "your-openai-api-key"
 
 #>
 function Get-AverageItemPrice {
@@ -30,83 +33,135 @@ function Get-AverageItemPrice {
         [Parameter(Mandatory = $true)]
         [string]$CurrentListingOutput,
         [Parameter(Mandatory = $true)]
-        [string]$token
+        [string]$eBayToken,
+        [Parameter(Mandatory = $true)]
+        [string]$OpenAIKey
     )
 
-    # Define headers for the eBay API request
-    $headers = @{
-        "Authorization"       = "Bearer $token"
-        "Content-Type"        = "application/json"
-        "X-EBAY-C-ENDUSERCTX" = "contextualLocation=country=US,zip=32119"
-    }
+# Define headers for the eBay API request
+$headers = @{
+    "Authorization"       = "Bearer $eBayToken"
+    "Content-Type"        = "application/json"
+    "X-EBAY-C-ENDUSERCTX" = "contextualLocation=country=US,zip=32119"
+}
 
-    # Initialize empty arrays to collect enriched data and product details
-    $enrichedData = @()
-    $products = @()
+# Initialize empty arrays to collect enriched data and product details
+$enrichedData = @()
+$products = @()
 
-    # Import the CSV file and select the first 3 rows after skipping 26 rows
-    $csvContent = Import-Csv -Path $csvPath
+$csvContent = Import-Csv -Path $csvPath
 
-    $itemNumber = 0
+$itemNumber = 0
 
-    # Process each row in the CSV file
-    foreach ($row in $csvContent) {
-        Write-Host -foregroundcolor yellow "Processing row $itemNumber..."
-        if ($row.Signed) {
-            $searchTerm = (("Autographed " + $row.item).Trim() -replace '[/\\#]', '').Replace("  ", " ")
-        }
-        else {
-            $searchTerm = (($row.item).Trim() -replace '[/\\#]', '').Replace("  ", " ")
-        }
+# Process each row in the CSV file
+foreach ($row in $csvContent) {
+    $itemNumber++
+
+    Write-Host -foregroundcolor yellow "Processing row $itemNumber..."
+    $searchTerm = ((("$($row.Scale) $($row.Manufacturer) $($row.item)").Trim() -replace '[/\\#]', '').Replace("  ", " "))
+    Write-Host -foregroundcolor yellow "Invoking REST method with search term: $searchTerm..."
+    $response = Invoke-RestMethod -Uri "https://api.ebay.com/buy/browse/v1/item_summary/search?category_ids=220&q=$searchTerm&limit=5&offset=0" -Method Get -Headers $headers
         
-        $itemNumber++
-
+    if ($null -eq $response.itemSummaries) {
+        $searchTerm = ((("$($row.Manufacturer) $($row.item)").Trim() -replace '[/\\#]', '').Replace("  ", " "))
         Write-Host -foregroundcolor yellow "Invoking REST method with search term: $searchTerm..."
         $response = Invoke-RestMethod -Uri "https://api.ebay.com/buy/browse/v1/item_summary/search?category_ids=220&q=$searchTerm&limit=5&offset=0" -Method Get -Headers $headers
-        
-        # Calculate the average price of the item
-        $averagePrice = [decimal]($response.itemSummaries.price.value | Measure-Object -Average).Average + [decimal]($response.itemSummaries.shippingOptions.shippingCost.value | Measure-Object -Average).Average
-        Write-Host -foregroundcolor yellow "Average price calculated: $averagePrice"
-
-        # Get the current listings for the item
-        $listings = ($response | Select-Object -expand itemSummaries)
-
-        # Process each listing and add it to the products array
-        foreach ($item in $listings) {
-            Write-Host -foregroundcolor yellow "Processing listing: $($item.title)..."
-            $products += [PSCustomObject]@{
-                Key           = $($itemNumber)
-                Title         = $($item.title)
-                Condition     = $($item.condition)
-                TotalPrice    = [decimal]$($item.price.value) + [decimal]$($item.shippingOptions.shippingCost.value)
-                SalePrice     = $($item.price.value)
-                ShippingPrice = $($item.shippingOptions.shippingCost.value)
-                BuyingFormat  = $($item.buyingOptions) -join ", "
-                CreationDate  = $($item.itemCreationDate)
-                EndDate       = $($item.itemEndDate)
-                ImageUrl      = $($item.thumbnailImages.imageUrl)
-                Link          = $($item.itemWebUrl)
-                SearchTerm    = $searchTerm
-            }
-        }
-
-        # Add the average price to the original data
-        $row | Add-Member -Name "AveragePrice" -MemberType NoteProperty -Value "$averagePrice" -Force
-        $row | Add-Member -Name "Key" -MemberType NoteProperty -Value $itemNumber -Force
-        $enrichedData += $row
-        Write-Host -foregroundcolor yellow "Row $itemNumber processed."
     }
 
-    # Export the enriched data and the product details to CSV files
-    Write-Host -foregroundcolor yellow "Exporting enriched data to CSV..."
-    $enrichedData | Export-Csv -Path $AveragePriceOutput -NoTypeInformation
-    Write-Host -foregroundcolor yellow "Exporting products to CSV..."
-    $products | Export-Csv -Path $CurrentListingOutput -NoTypeInformation
-    Write-Host -foregroundcolor yellow "Processing completed."
+    if ($null -eq $response.itemSummaries) {
+        $searchTerm = ((("$($row.item)").Trim() -replace '[/\\#]', '').Replace("  ", " "))
+        Write-Host -foregroundcolor yellow "Invoking REST method with search term: $searchTerm..."
+        $response = Invoke-RestMethod -Uri "https://api.ebay.com/buy/browse/v1/item_summary/search?category_ids=220&q=$searchTerm&limit=5&offset=0" -Method Get -Headers $headers
+    }
 
-    # Return the enriched data and the product details
-    $enrichedData
-    $products
+    if ($null -eq $response.itemSummaries) {
+        $searchTerm = ((("$($row.Manufacturer) $($row.item)").Trim() -replace '[/\\#]', '').Replace("  ", " "))
+        $OpenAIHeaders = @{
+            "Content-Type"  = "application/json"
+            "Authorization" = "Bearer $OpenAIKey"
+        }
+        $Body = @{
+            "model"             = "gpt-3.5-turbo-16k-0613"
+            "messages"          = @( @{
+                    "role"    = "system"
+                    "content" = "You are a helpful eBay API assistant that takes an eBay search query and generates 10 better eBay search queries taylored toward motosports collectables, fixing mispellings and expanding abbreviations, starting out specific and making each search query progressively fewer words, prioritizing names and years. You output the new search queries only, comma separated."
+                },
+                @{
+                    "role"    = "user"
+                    "content" = "$searchTerm"
+                },
+                @{
+                    "role"    = "assistant"
+                    "content" = ""
+                })
+            "temperature"       = 0
+            'top_p'             = 1.0
+            'frequency_penalty' = 0.0
+            'presence_penalty'  = 0.0
+            'stop'              = @('"""')
+        } | ConvertTo-Json
+            
+        try {
+            $OpenAICall = Invoke-RestMethod -Uri "https://api.openai.com/v1/chat/completions" -Method Post -Body $Body -Headers $OpenAIHeaders
+            $searchTerms = ((($OpenAICall.choices.message.content -replace '1\.' -replace '2\.' -replace '3\.' -replace '4\.' -replace '5\.' -replace '6\.' -replace '7\.' -replace '8\.' -replace '9\.' -replace '10\.').split(",")).split("`n")).Trim() | Where-Object { $_ -ne "" } | Select-Object -last 10
+        }
+        catch {
+            Write-Error "$($_.Exception.Message)"
+        }
+        
+        foreach ($searchTerm in $searchTerms) {
+            if ($null -eq $response.itemSummaries) {
+                "AI Generated: $searchTerm"
+                Write-Host -foregroundcolor yellow "Invoking REST method with search term: $searchTerm..."
+                $response = Invoke-RestMethod -Uri "https://api.ebay.com/buy/browse/v1/item_summary/search?category_ids=220&q=$searchTerm&limit=5&offset=0" -Method Get -Headers $headers
+            }
+        }
+    }
+
+
+    # Calculate the average price of the item
+    $averagePrice = [decimal]($response.itemSummaries.price.value | Measure-Object -Average).Average + [decimal]($response.itemSummaries.shippingOptions.shippingCost.value | Measure-Object -Average).Average
+    Write-Host -foregroundcolor yellow "Average price calculated: $averagePrice"
+
+    # Get the current listings for the item
+    $listings = ($response | Select-Object -expand itemSummaries)
+
+    # Process each listing and add it to the products array
+    foreach ($item in $listings) {
+        Write-Host -foregroundcolor yellow "Processing listing: $($item.title)..."
+        $products += [PSCustomObject]@{
+            Key           = $($itemNumber)
+            Title         = $($item.title)
+            Condition     = $($item.condition)
+            TotalPrice    = [decimal]$($item.price.value) + [decimal]$($item.shippingOptions.shippingCost.value)
+            SalePrice     = $($item.price.value)
+            ShippingPrice = $($item.shippingOptions.shippingCost.value)
+            BuyingFormat  = $($item.buyingOptions) -join ", "
+            CreationDate  = $($item.itemCreationDate)
+            EndDate       = $($item.itemEndDate)
+            ImageUrl      = $($item.thumbnailImages.imageUrl)
+            Link          = $($item.itemWebUrl)
+            SearchTerm    = $searchTerm
+        }
+    }
+
+    # Add the average price to the original data
+    $row | Add-Member -Name "AveragePrice" -MemberType NoteProperty -Value "$averagePrice" -Force
+    $row | Add-Member -Name "Key" -MemberType NoteProperty -Value $itemNumber -Force
+    $enrichedData += $row
+    Write-Host -foregroundcolor yellow "Row $itemNumber processed."
+}
+
+# Export the enriched data and the product details to CSV files
+Write-Host -foregroundcolor yellow "Exporting enriched data to CSV..."
+$enrichedData | Export-Csv -Path $AveragePriceOutput -NoTypeInformation
+Write-Host -foregroundcolor yellow "Exporting products to CSV..."
+$products | Export-Csv -Path $CurrentListingOutput -NoTypeInformation
+Write-Host -foregroundcolor yellow "Processing completed."
+
+# Return the enriched data and the product details
+$enrichedData
+$products
 }
 
 
